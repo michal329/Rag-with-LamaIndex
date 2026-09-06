@@ -1,0 +1,210 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-25T17:23:50+00:00",
+  "sources": [
+    {
+      "tool": "doc",
+      "root_path": ".",
+      "files": [
+        {
+          "path": "README.md",
+          "last_modified": "2026-05-24T11:33:42+00:00"
+        }
+      ]
+    },
+    {
+      "tool": "doc",
+      "root_path": ".",
+      "files": [
+        {
+          "path": "INSTRUCTIONS_HE.md",
+          "last_modified": "2026-05-24T11:49:15+00:00"
+        }
+      ]
+    },
+    {
+      "tool": "doc",
+      "root_path": "data/md_files",
+      "files": [
+        {
+          "path": "data/md_files/agentic_coding.md",
+          "last_modified": "2026-05-24T11:59:11+00:00"
+        }
+      ]
+    },
+    {
+      "tool": "doc",
+      "root_path": "data/md_files",
+      "files": [
+        {
+          "path": "data/md_files/rag_guide.md",
+          "last_modified": "2026-05-24T11:59:11+00:00"
+        }
+      ]
+    },
+    {
+      "tool": "doc",
+      "root_path": "data/md_files",
+      "files": [
+        {
+          "path": "data/md_files/gradio_intro.md",
+          "last_modified": "2026-05-24T11:59:11+00:00"
+        }
+      ]
+    }
+  ],
+  "items": {
+    "decisions": [
+      {
+        "id": "dec-001",
+        "title": "הפרויקט משתמש ב-LlamaIndex, Cohere ו-Pinecone",
+        "summary": "הזרימה מבוססת LlamaIndex עם embeddings מ-Cohere, אינדקס וקטורי ב-Pinecone, והצגת התוצאות דרך Gradio.",
+        "tags": [
+          "rag",
+          "llama-index",
+          "cohere",
+          "pinecone",
+          "gradio"
+        ],
+        "source": {
+          "tool": "doc",
+          "file": "README.md",
+          "anchor": "LlamaIndex / Cohere / Pinecone",
+          "line_range": [
+            1,
+            40
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      },
+      {
+        "id": "dec-002",
+        "title": "Agentic Coding משתמש בכלי AI שונים לפיתוח",
+        "summary": "במסמך Agentic Coding נזכרים Cursor, Claude Code, Kiro, GitHub Copilot ו-Cody ככלים זמינים לפיתוח.",
+        "tags": [
+          "agentic-coding",
+          "tools",
+          "cursor",
+          "claude",
+          "kiro",
+          "copilot",
+          "cody"
+        ],
+        "source": {
+          "tool": "doc",
+          "file": "data/md_files/agentic_coding.md",
+          "anchor": "כלים זמינים",
+          "line_range": [
+            1,
+            20
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      },
+      {
+        "id": "dec-003",
+        "title": "Gradio משמש לממשק משתמש מקומי ל-LLM",
+        "summary": "הפרויקט מציג ממשק Gradio מקומי, והפעולה המרכזית היא launch() שמפעילה את הממשק על localhost.",
+        "tags": [
+          "gradio",
+          "ui",
+          "launch"
+        ],
+        "source": {
+          "tool": "doc",
+          "file": "data/md_files/gradio_intro.md",
+          "anchor": "Gradio - ממשקי משתמש ל-LLM",
+          "line_range": [
+            1,
+            30
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      }
+    ],
+    "rules": [
+      {
+        "id": "rule-001",
+        "rule": "שומרים את קבצי ה-Markdown בתיקייה data/md_files",
+        "scope": "data",
+        "notes": "המערכת בונה את ההתייחסות לתוכן דרך קבצי Markdown שנמצאים ב-data/md_files.",
+        "source": {
+          "tool": "doc",
+          "file": "INSTRUCTIONS_HE.md",
+          "anchor": "קבצי MD",
+          "line_range": [
+            20,
+            40
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      },
+      {
+        "id": "rule-002",
+        "rule": "הרצת האפליקציה נעשית עם python src/main.py לאחר הפעלת הסביבה",
+        "scope": "run",
+        "notes": "מומלץ להשתמש ב-.venv311 ולהפעיל את הסביבה לפני הריצה.",
+        "source": {
+          "tool": "doc",
+          "file": "INSTRUCTIONS_HE.md",
+          "anchor": "הרצת האפליקציה",
+          "line_range": [
+            40,
+            60
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      },
+      {
+        "id": "rule-003",
+        "rule": "Gradio צריך להיפתח דרך launch() כך שיתגלה בממשק מקומי",
+        "scope": "ui",
+        "notes": "המסמך מציין ש-launch() מפעיל את הממשק המקומי בפורט 7860.",
+        "source": {
+          "tool": "doc",
+          "file": "data/md_files/gradio_intro.md",
+          "anchor": "launch()",
+          "line_range": [
+            20,
+            30
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      }
+    ],
+    "warnings": [
+      {
+        "id": "warn-001",
+        "area": "auth",
+        "message": "חוסר במפתחות COHERE_API_KEY או PINECONE_API_KEY יפגע בהרצת המערכת",
+        "severity": "high",
+        "source": {
+          "tool": "doc",
+          "file": "INSTRUCTIONS_HE.md",
+          "anchor": "מפתחות Cohere ו-Pinecone",
+          "line_range": [
+            20,
+            40
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      },
+      {
+        "id": "warn-002",
+        "area": "infrastructure",
+        "message": "צריך ליצור index בשם rag-md ב-Pinecone לפני הרצת הקוד",
+        "severity": "high",
+        "source": {
+          "tool": "doc",
+          "file": "INSTRUCTIONS_HE.md",
+          "anchor": "Pinecone Index",
+          "line_range": [
+            26,
+            40
+          ]
+        },
+        "observed_at": "2026-05-25T17:23:50+00:00"
+      }
+    ]
+  }
+}

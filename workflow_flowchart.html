@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workflow Flowchart</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'base', flowchart: { curve: 'linear' }, securityLevel: 'loose' });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            padding: 20px;
+            background: #f7f7f7;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .diagram-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="diagram-container">
+        <h1>Workflow Flowchart</h1>
+        <div class="mermaid">
+            flowchart TD
+            A[התחלת בקשת משתמש] --> B[קבלת שאילתה מהמשתמש]
+            B --> C{האם זו שאילתה מובנית?}
+            C -- כן --> D[load_structured_dataset / build_structured_response]
+            C -- לא --> E[הפעלת RAGWorkflow]
+            E --> F[Retrieve Context מהאינדקס]
+            F --> G[Validate Results / Retry אם צריך]
+            G --> H[Generate Answer עם LLM]
+            D --> I[הכנת תשובה מתוך הנתונים המבניים]
+            H --> J[החזרת תשובה ל-Gradio]
+            I --> J
+            J --> K[סיום]
+            subgraph data
+            D
+            I
+            end
+            subgraph semantic
+            E
+            F
+            G
+            H
+            end
+        </div>
+        <p>התרשים מראה את הזרימה בין ניתוב לשימוש בנתונים מובנים לעומת חיפוש סמנטי.</p>
+    </div>
+</body>
+
+</html>

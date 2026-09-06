@@ -1,0 +1,19 @@
+[project]
+name = "ai008"
+version = "0.1.0"
+description = "Standard Python project for AI tooling"
+authors = ["GitHub Copilot <noreply@example.com>"]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "python-dotenv",
+    "llama-index",
+    "llama-index-vector-stores-pinecone",
+    "llama-index-embeddings-cohere",
+    "pinecone-client",
+    "gradio",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
