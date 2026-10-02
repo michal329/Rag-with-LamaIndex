@@ -1,3 +1,16 @@
+---
+title: Event-Driven RAG System
+emoji: 📚
+colorFrom: indigo
+colorTo: blue
+sdk: gradio
+sdk_version: 6.29.0
+python_version: "3.12"
+app_file: app.py
+pinned: false
+short_description: Event-driven RAG over Markdown with LlamaIndex and Cohere
+---
+
 # 📊 AI008 - RAG with LlamaIndex
 
 פרויקט RAG (Retrieval-Augmented Generation) המשתמש ב-LlamaIndex, Cohere, Pinecone, ו-Gradio.
