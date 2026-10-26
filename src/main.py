@@ -283,7 +283,10 @@ interface = gr.Interface(
 def main() -> None:
     print("בנה ממשק Gradio לשאילתות על קבצי MD")
     load_structured_dataset()
-    get_runtime_cache()
+    try:
+        get_runtime_cache()
+    except ValueError as exc:
+        sys.exit(f"Cannot start: {exc}. Set COHERE_API_KEY in .env or the environment.")
     interface.launch()
 
 

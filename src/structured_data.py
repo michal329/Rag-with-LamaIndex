@@ -8,10 +8,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 STRUCTURED_DATA_PATH = DATA_DIR / "structured_data.json"
 
-SOURCE_FILES = [
-    PROJECT_ROOT / "README.md",
-    PROJECT_ROOT / "INSTRUCTIONS_HE.md",
-] + sorted((DATA_DIR / "md_files").glob("*.md"))
+SOURCE_FILES = sorted((DATA_DIR / "md_files").glob("*.md"))
 
 CATEGORY_KEYWORDS = {
     "decisions": ["החלטה", "החלטות", "נבחר", "הוחלט", "decision"],
@@ -123,7 +120,7 @@ def _extract_markdown_items(path: Path) -> dict[str, list[dict[str, Any]]]:
                     {
                         "title": _sentence_summary(paragraph, 80),
                         "summary": paragraph,
-                        "tags": [tok for tok in ["rag", "cohere", "pinecone", "gradio", "llama-index"] if tok in paragraph.lower()],
+                        "tags": [tok for tok in ["rag", "cohere", "gradio", "llama-index"] if tok in paragraph.lower()],
                     }
                 )
             elif category == "rules":
@@ -230,13 +227,13 @@ def generate_structured_dataset() -> dict[str, Any]:
         "decisions",
         {
             "id": "dec-001",
-            "title": "הפרויקט משתמש ב-LlamaIndex, Cohere ו-Pinecone",
-            "summary": "הזרימה מבוססת LlamaIndex עם embeddings מ-Cohere, אינדקס וקטורי ב-Pinecone, והצגת התוצאות דרך Gradio.",
-            "tags": ["rag", "llama-index", "cohere", "pinecone", "gradio"],
+            "title": "הפרויקט משתמש ב-LlamaIndex, Cohere ו-Gradio",
+            "summary": "הזרימה מבוססת LlamaIndex עם embeddings מ-Cohere, אינדקס וקטורי בזיכרון (VectorStoreIndex), והצגת התוצאות דרך Gradio.",
+            "tags": ["rag", "llama-index", "cohere", "gradio"],
             "source": _source_for(
-                PROJECT_ROOT / "README.md",
-                "LlamaIndex / Cohere / Pinecone",
-                [1, 40],
+                PROJECT_ROOT / "data" / "md_files" / "rag_guide.md",
+                "שימוש ב-LlamaIndex",
+                [1, 20],
             ),
             "observed_at": dataset["generated_at"],
         },
@@ -286,9 +283,9 @@ def generate_structured_dataset() -> dict[str, Any]:
             "scope": "data",
             "notes": "המערכת בונה את ההתייחסות לתוכן דרך קבצי Markdown שנמצאים ב-data/md_files.",
             "source": _source_for(
-                PROJECT_ROOT / "INSTRUCTIONS_HE.md",
-                "קבצי MD",
-                [20, 40],
+                PROJECT_ROOT / "README.md",
+                "Data",
+                [1, 1],
             ),
             "observed_at": dataset["generated_at"],
         },
@@ -299,13 +296,13 @@ def generate_structured_dataset() -> dict[str, Any]:
         "rules",
         {
             "id": "rule-002",
-            "rule": "הרצת האפליקציה נעשית עם python src/main.py לאחר הפעלת הסביבה",
+            "rule": "הרצת האפליקציה נעשית עם python app.py לאחר הפעלת הסביבה הוירטואלית",
             "scope": "run",
-            "notes": "מומלץ להשתמש ב-.venv311 ולהפעיל את הסביבה לפני הריצה.",
+            "notes": "יש להפעיל סביבה וירטואלית ולהתקין את requirements.txt לפני הריצה.",
             "source": _source_for(
-                PROJECT_ROOT / "INSTRUCTIONS_HE.md",
-                "הרצת האפליקציה",
-                [40, 60],
+                PROJECT_ROOT / "README.md",
+                "Setup",
+                [1, 1],
             ),
             "observed_at": dataset["generated_at"],
         },
@@ -335,12 +332,12 @@ def generate_structured_dataset() -> dict[str, Any]:
         {
             "id": "warn-001",
             "area": "auth",
-            "message": "חוסר במפתחות COHERE_API_KEY או PINECONE_API_KEY יפגע בהרצת המערכת",
+            "message": "חוסר במפתח COHERE_API_KEY יפגע בהרצת חיפוש סמנטי (שאלות מובנות פועלות גם בלי מפתח)",
             "severity": "high",
             "source": _source_for(
-                PROJECT_ROOT / "INSTRUCTIONS_HE.md",
-                "מפתחות Cohere ו-Pinecone",
-                [20, 40],
+                PROJECT_ROOT / "README.md",
+                "Setup",
+                [1, 1],
             ),
             "observed_at": dataset["generated_at"],
         },
@@ -352,12 +349,12 @@ def generate_structured_dataset() -> dict[str, Any]:
         {
             "id": "warn-002",
             "area": "infrastructure",
-            "message": "צריך ליצור index בשם rag-md ב-Pinecone לפני הרצת הקוד",
-            "severity": "high",
+            "message": "האינדקס הווקטורי נבנה בזיכרון בכל הפעלה ולכן כל הפעלה צורכת מכסת Cohere",
+            "severity": "medium",
             "source": _source_for(
-                PROJECT_ROOT / "INSTRUCTIONS_HE.md",
-                "Pinecone Index",
-                [26, 40],
+                PROJECT_ROOT / "src" / "main.py",
+                "build_runtime",
+                [147, 160],
             ),
             "observed_at": dataset["generated_at"],
         },
@@ -433,7 +430,7 @@ def build_structured_response(query: str) -> str:
     else:
         selected_items = items["decisions"] + items["rules"] + items["warnings"]
 
-    if not category and "rtl" in normalized_query:
+    if category in (None, "rules") and "rtl" in normalized_query:
         selected_items = [
             item
             for item in items["rules"]

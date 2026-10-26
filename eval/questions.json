@@ -1,0 +1,12 @@
+[
+  {"question": "מהם היתרונות של Agentic Coding?", "expected_file": "agentic_coding.md"},
+  {"question": "אילו כלים זמינים לפיתוח עם AI?", "expected_file": "agentic_coding.md"},
+  {"question": "האם Cursor ו-Kiro הם כלי Agentic Coding?", "expected_file": "agentic_coding.md"},
+  {"question": "מהם שלבי העבודה בבניית מערכת RAG?", "expected_file": "rag_guide.md"},
+  {"question": "מה זה Retrieval-Augmented Generation?", "expected_file": "rag_guide.md"},
+  {"question": "מה Cohere מספקת?", "expected_file": "rag_guide.md"},
+  {"question": "מהו Pinecone?", "expected_file": "rag_guide.md"},
+  {"question": "באיזה פורט Gradio עולה כברירת מחדל?", "expected_file": "gradio_intro.md"},
+  {"question": "אילו רכיבי ממשק קיימים ב-Gradio?", "expected_file": "gradio_intro.md"},
+  {"question": "איך בונים ממשק משתמש פשוט בפייתון עם greet?", "expected_file": "gradio_intro.md"}
+]

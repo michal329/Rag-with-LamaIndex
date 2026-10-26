@@ -1,19 +1,18 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
 env/
 venv/
-.build/
-*.egg-info/
+.venv/
+.venv*/
 
 # Editor
 .vscode/
 .idea/
-.venv/
-.venv311/
-venv/
 
 # Secrets
 .env

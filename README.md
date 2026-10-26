@@ -11,94 +11,141 @@ pinned: false
 short_description: Event-driven RAG over Markdown with LlamaIndex and Cohere
 ---
 
-# 📊 AI008 - RAG with LlamaIndex
+# Event-Driven RAG with LlamaIndex
 
-פרויקט RAG (Retrieval-Augmented Generation) המשתמש ב-LlamaIndex, Cohere, Pinecone, ו-Gradio.
+A small question-answering app over a folder of Markdown files. Questions are routed to one of two paths:
 
-## 🚀 התקנת הפרויקט
+- **Semantic path (RAG):** a LlamaIndex `Workflow` retrieves the most similar chunks using Cohere embeddings and asks a Cohere LLM to answer from them only.
+- **Structured path:** questions that ask for decisions, rules, warnings, or "what changed in the last week/month/today" are answered directly from `data/structured_data.json`, with no LLM or API call.
 
-### 1. **הפעל את הסביבה הוירטואלית (Python 3.11+)**
+The knowledge base (`data/md_files/*.md`) and the user-facing prompts and answers are in **Hebrew**; the embedding model is multilingual. The UI is a Gradio `Interface`.
+
+## Architecture
+
+```
+Gradio textbox
+      |
+run_rag_workflow(query)                       src/main.py
+      |
+is_structured_query(query)?  --yes-->  build_structured_response(query)   src/structured_data.py
+      |no                                      reads data/structured_data.json
+      v
+RAGWorkflow (llama_index.core.workflow.Workflow)
+  StartEvent
+    -> validate_input      trims; rejects empty / <3 chars          -> InputValidatedEvent
+    -> retrieve_context    top-5 vector search (also on retry)      -> RetrievalDoneEvent
+    -> validate_results    best score < 0.35 or no hits?
+                             first time: rewrite query              -> RetrySearchEvent (back to retrieve_context)
+                             second time: give up                   -> StopEvent("no relevant results")
+                           otherwise                                -> SynthesisReadyEvent
+    -> generate_answer     Cohere chat, prompt says "answer from the context only,
+                           otherwise say you don't know"            -> AnswerReadyEvent
+    -> finish                                                       -> StopEvent(answer)
+```
+
+`workflow_flowchart.html` is a Mermaid diagram of the routing (open it in a browser; it loads Mermaid from a CDN).
+
+Components, as implemented:
+
+| Piece | What the code uses |
+|---|---|
+| Orchestration | LlamaIndex `Workflow`, typed `Event`s, `@step` (`src/main.py`) |
+| Embeddings | Cohere `embed-multilingual-v3.0` via `llama-index-embeddings-cohere` |
+| LLM | Cohere `command-r-08-2024` via `llama-index-llms-cohere` |
+| Vector index | LlamaIndex `VectorStoreIndex` held **in memory**, built from `data/md_files` on the first semantic question and cached for the process lifetime |
+| UI | Gradio `Interface` (`app.py` for Spaces, `python src/main.py` also works) |
+| Structured data | `src/structured_data.py` + `data/structured_data.json` (keyword routing, optional time filter) |
+
+**No Pinecone.** Earlier versions of this project planned a Pinecone vector store; the current code does not import or use it, and no Pinecone key is needed.
+
+### Structured path details
+
+- Routing is keyword-based (Hebrew trigger words such as החלטות, הנחיות, אזהרה, שבוע האחרון, היום).
+- The JSON holds three categories: `decisions`, `rules`, `warnings`. The shipped file contains 8 items in total (3 decisions, 3 rules, 2 warnings), written by hand in `generate_structured_dataset()`. The function can also extract items from Markdown paragraphs by keyword, but the three sample documents currently yield none.
+- Time filters ("last week", "last month", "today") compare each item's `observed_at` with now. In the shipped JSON, `observed_at` is the generation time, so these filters return items only while the file is recent; regenerate with `python -c "from src.structured_data import save_structured_dataset; save_structured_dataset()"`.
+
+## Setup
+
+Requirements: Python 3.10 or newer (the packages declare `>=3.10`; developed and tested on 3.12, which is also what the Space config uses). Pinned versions are in `requirements.txt`:
+
+| Package | Version |
+|---|---|
+| llama-index-core | 0.14.25 |
+| llama-index-embeddings-cohere | 0.9.0 |
+| llama-index-llms-cohere | 0.9.0 |
+| gradio | 6.29.0 |
+| python-dotenv | 1.2.4 |
 
 ```powershell
-cd C:\Users\User\Desktop\AI008
-.\.venv311\Scripts\Activate
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-אם תראי `(.venv311)` בתחילת השורה - משהו יצא טוב! ✅
+Create a `.env` file in the project root (it is git-ignored) with your key. Never put keys in code.
 
-### 2. **התקן את התלויות**
-
-סביבת ה-Python 3.11 כבר מעודכנת עם כל החבילות הדרושות:
-- `llama-index` (0.14.22)
-- `llama-index-vector-stores-pinecone` (0.8.0)
-- `llama-index-embeddings-cohere` (0.8.0)
-- `pinecone-client` (6.0.0)
-- `gradio` (6.14.0)
-
-### 3. **הכן את המפתחות**
-
-צור קובץ `.env` או עדכן את `src/main.py` עם המפתחות שלך:
-
-```python
-os.environ['PINECONE_API_KEY'] = 'YOUR_PINECONE_API_KEY'
-os.environ['COHERE_API_KEY'] = 'YOUR_COHERE_API_KEY'
+```
+COHERE_API_KEY=your-cohere-key
 ```
 
-### 4. **הכן את הנתונים**
+Only `COHERE_API_KEY` is read. Structured questions work without it; semantic questions fail with `COHERE_API_KEY Missing`.
 
-יצור תיקייה `data/md_files` והכנס בה קבצי Markdown:
+## Run
 
 ```powershell
-mkdir data/md_files
+python app.py
 ```
 
-### 5. **הרץ את האפליקציה**
+Gradio serves on `http://127.0.0.1:7860`. The first semantic question builds the index (embedding the three Markdown files), so it is slower; later ones reuse it. `python src/main.py` does the same but builds the index at startup and exits with a clear message if the key is missing.
+
+Deployment to Hugging Face Spaces is described in [DEPLOY_HF.md](DEPLOY_HF.md).
+
+## Tests
 
 ```powershell
-python src/main.py
+pip install pytest
+python -m pytest -q
 ```
 
-ממשק Gradio יפתח ב-`http://localhost:7860`
+The 14 tests need no API keys. They cover query validation and retry logic, context/prompt building, structured-data routing and responses, and that the modules import without keys. The live Cohere calls and the full workflow run are not covered by tests.
 
-## 📋 מבנה הפרויקט
+## Retrieval evaluation
 
-```
-AI008/
-├── .venv311/             # סביבה וירטואלית Python 3.11
-├── src/
-│   ├── main.py          # קוד ראשי עם Gradio UI ו-RAG
-│   └── ...
-├── data/
-│   └── md_files/        # קבצי MD להתיבה
-├── pyproject.toml       # הגדרות פרויקט
-├── requirements.txt     # רשימת החבילות
-└── README.md            # קובץ זה
+`eval/eval_retrieval.py` runs 10 Hebrew questions from `eval/questions.json` (each with the Markdown file that should answer it) through the same index and reports hit@1 and hit@5 for the expected source file. It calls the Cohere embedding API, so it needs `COHERE_API_KEY`:
+
+```powershell
+python eval/eval_retrieval.py
 ```
 
-## 🔧 API و Classes המשמשות
+No results are published here because the script has not been run with a key yet. Note that the corpus is only three short files, so this checks basic sanity, not retrieval quality at scale.
 
-- **CohereEmbedding**: יצירת embeddings מ-Cohere
-- **PineconeVectorStore**: אחסון וקטורים בפיינקון
-- **VectorStoreIndex**: אינדקס וקטורי של LlamaIndex
-- **Gradio Interface**: ממשק משתמש לשאילתות
+## Example
 
-## 📝 צעדי הפרויקט
+Structured path (runs offline). Question: `תן לי רשימה של כל ההחלטות הטכניות שהתקבלו בפרויקט` ("list all technical decisions made in the project"). Actual output:
 
-1. **Loading**: טעינת קבצי MD מ-`data/md_files`
-2. **Embedding**: יצירת embeddings עם Cohere
-3. **Indexing**: אינדקסציה ב-Pinecone
-4. **Query**: חיפוש סמנטי וצירוף תוצאות
-5. **Response**: צירוף תשובה עם LLM
+```
+החלטות:
 
-## ⚠️ הערות חשובות
+1. הפרויקט משתמש ב-LlamaIndex, Cohere ו-Gradio
+   הזרימה מבוססת LlamaIndex עם embeddings מ-Cohere, אינדקס וקטורי בזיכרון (VectorStoreIndex), והצגת התוצאות דרך Gradio.
+   מקור: data/md_files/rag_guide.md
+2. Agentic Coding משתמש בכלי AI שונים לפיתוח
+   במסמך Agentic Coding נזכרים Cursor, Claude Code, Kiro, GitHub Copilot ו-Cody ככלים זמינים לפיתוח.
+   מקור: data/md_files/agentic_coding.md
+3. Gradio משמש לממשק משתמש מקומי ל-LLM
+   הפרויקט מציג ממשק Gradio מקומי, והפעולה המרכזית היא launch() שמפעילה את הממשק על localhost.
+   מקור: data/md_files/gradio_intro.md
+```
 
-- את צריכה למפתחות ל-Cohere ו-Pinecone
-- חלק מהתלויות עדיין לא תומכות בימים אלו (cohere+tokenizers)
-- אם יש בעיות, נסי להתקין קבצים בודדים בהמתנה
+A semantic question such as `מה זה RAG?` goes through `RAGWorkflow` and needs the Cohere key. Its answer is not shown here because it was not run for this README.
 
-## 📞 תמיכה
+## Limitations
 
-אם יש בעיות, בדקי:
-1. שה-venv מופעל: `(.venv311)` בשורה
-2. שהמפתחותgit add . נשמרו בנכון
-3. שקבצי MD קיימים ב-`data/md_files`
+- The vector index lives in memory and is rebuilt on every process start (each start spends Cohere quota); there is no persistent vector database.
+- The knowledge base is three short Hebrew Markdown files; there is no document upload or chunking configuration (LlamaIndex defaults are used).
+- The structured dataset is tiny and mostly hand-written; the routing is keyword-based, so some questions containing words like `אילו` or `היום` take the structured path even when a semantic answer would fit better, and only Hebrew trigger words are recognised.
+- The retry only prepends a short Hebrew phrase to the query; it is not a real query rewrite.
+- The retry threshold (0.35) is a fixed constant and has not been tuned.
+- A semantic question blocks the Workflow with a 30-second timeout; there is no streaming, conversation memory, or citation display in the UI (sources are passed to the LLM in the prompt but not shown separately).
+- `command-r-08-2024` is a fixed model id; if Cohere retires it, change it in `build_runtime()`.
+- The runtime cache is a module-level global, shared by all users of the process.

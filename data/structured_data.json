@@ -1,44 +1,14 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-05-25T17:23:50+00:00",
+  "generated_at": "2026-10-26T13:47:36+00:00",
   "sources": [
-    {
-      "tool": "doc",
-      "root_path": ".",
-      "files": [
-        {
-          "path": "README.md",
-          "last_modified": "2026-05-24T11:33:42+00:00"
-        }
-      ]
-    },
-    {
-      "tool": "doc",
-      "root_path": ".",
-      "files": [
-        {
-          "path": "INSTRUCTIONS_HE.md",
-          "last_modified": "2026-05-24T11:49:15+00:00"
-        }
-      ]
-    },
     {
       "tool": "doc",
       "root_path": "data/md_files",
       "files": [
         {
           "path": "data/md_files/agentic_coding.md",
-          "last_modified": "2026-05-24T11:59:11+00:00"
-        }
-      ]
-    },
-    {
-      "tool": "doc",
-      "root_path": "data/md_files",
-      "files": [
-        {
-          "path": "data/md_files/rag_guide.md",
-          "last_modified": "2026-05-24T11:59:11+00:00"
+          "last_modified": "2026-10-01T19:35:13+00:00"
         }
       ]
     },
@@ -48,7 +18,17 @@
       "files": [
         {
           "path": "data/md_files/gradio_intro.md",
-          "last_modified": "2026-05-24T11:59:11+00:00"
+          "last_modified": "2026-10-01T19:35:13+00:00"
+        }
+      ]
+    },
+    {
+      "tool": "doc",
+      "root_path": "data/md_files",
+      "files": [
+        {
+          "path": "data/md_files/rag_guide.md",
+          "last_modified": "2026-10-01T19:35:13+00:00"
         }
       ]
     }
@@ -57,25 +37,24 @@
     "decisions": [
       {
         "id": "dec-001",
-        "title": "הפרויקט משתמש ב-LlamaIndex, Cohere ו-Pinecone",
-        "summary": "הזרימה מבוססת LlamaIndex עם embeddings מ-Cohere, אינדקס וקטורי ב-Pinecone, והצגת התוצאות דרך Gradio.",
+        "title": "הפרויקט משתמש ב-LlamaIndex, Cohere ו-Gradio",
+        "summary": "הזרימה מבוססת LlamaIndex עם embeddings מ-Cohere, אינדקס וקטורי בזיכרון (VectorStoreIndex), והצגת התוצאות דרך Gradio.",
         "tags": [
           "rag",
           "llama-index",
           "cohere",
-          "pinecone",
           "gradio"
         ],
         "source": {
           "tool": "doc",
-          "file": "README.md",
-          "anchor": "LlamaIndex / Cohere / Pinecone",
+          "file": "data/md_files/rag_guide.md",
+          "anchor": "שימוש ב-LlamaIndex",
           "line_range": [
             1,
-            40
+            20
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       },
       {
         "id": "dec-002",
@@ -99,7 +78,7 @@
             20
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       },
       {
         "id": "dec-003",
@@ -119,7 +98,7 @@
             30
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       }
     ],
     "rules": [
@@ -130,30 +109,30 @@
         "notes": "המערכת בונה את ההתייחסות לתוכן דרך קבצי Markdown שנמצאים ב-data/md_files.",
         "source": {
           "tool": "doc",
-          "file": "INSTRUCTIONS_HE.md",
-          "anchor": "קבצי MD",
+          "file": "README.md",
+          "anchor": "Data",
           "line_range": [
-            20,
-            40
+            1,
+            1
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       },
       {
         "id": "rule-002",
-        "rule": "הרצת האפליקציה נעשית עם python src/main.py לאחר הפעלת הסביבה",
+        "rule": "הרצת האפליקציה נעשית עם python app.py לאחר הפעלת הסביבה הוירטואלית",
         "scope": "run",
-        "notes": "מומלץ להשתמש ב-.venv311 ולהפעיל את הסביבה לפני הריצה.",
+        "notes": "יש להפעיל סביבה וירטואלית ולהתקין את requirements.txt לפני הריצה.",
         "source": {
           "tool": "doc",
-          "file": "INSTRUCTIONS_HE.md",
-          "anchor": "הרצת האפליקציה",
+          "file": "README.md",
+          "anchor": "Setup",
           "line_range": [
-            40,
-            60
+            1,
+            1
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       },
       {
         "id": "rule-003",
@@ -169,41 +148,41 @@
             30
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       }
     ],
     "warnings": [
       {
         "id": "warn-001",
         "area": "auth",
-        "message": "חוסר במפתחות COHERE_API_KEY או PINECONE_API_KEY יפגע בהרצת המערכת",
+        "message": "חוסר במפתח COHERE_API_KEY יפגע בהרצת חיפוש סמנטי (שאלות מובנות פועלות גם בלי מפתח)",
         "severity": "high",
         "source": {
           "tool": "doc",
-          "file": "INSTRUCTIONS_HE.md",
-          "anchor": "מפתחות Cohere ו-Pinecone",
+          "file": "README.md",
+          "anchor": "Setup",
           "line_range": [
-            20,
-            40
+            1,
+            1
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       },
       {
         "id": "warn-002",
         "area": "infrastructure",
-        "message": "צריך ליצור index בשם rag-md ב-Pinecone לפני הרצת הקוד",
-        "severity": "high",
+        "message": "האינדקס הווקטורי נבנה בזיכרון בכל הפעלה ולכן כל הפעלה צורכת מכסת Cohere",
+        "severity": "medium",
         "source": {
           "tool": "doc",
-          "file": "INSTRUCTIONS_HE.md",
-          "anchor": "Pinecone Index",
+          "file": "src/main.py",
+          "anchor": "build_runtime",
           "line_range": [
-            26,
-            40
+            147,
+            160
           ]
         },
-        "observed_at": "2026-05-25T17:23:50+00:00"
+        "observed_at": "2026-10-26T13:47:36+00:00"
       }
     ]
   }

@@ -40,6 +40,12 @@ class StructuredDataTests(unittest.TestCase):
         self.assertIn("LlamaIndex", response)
         self.assertIn("Cohere", response)
 
+    def test_rtl_query_without_matching_rule_says_so(self):
+        response = build_structured_response("מה ההנחיה העדכנית לגבי שימוש ב-RTL בממשק")
+
+        self.assertIn("RTL", response)
+        self.assertIn("לא נמצאה הנחיה מפורשת", response)
+
 
 if __name__ == "__main__":
     unittest.main()
