@@ -263,9 +263,11 @@ async def run_rag_workflow(query: str) -> str:
 # Gradio UI
 # ===============================
 
-def gradio_interface(query: str) -> str:
+async def gradio_interface(query: str) -> str:
+    # Async so every query runs on Gradio's one event loop: asyncio.run() per query
+    # closed the loop the cached Cohere client was bound to, so the 2nd query failed.
     try:
-        return asyncio.run(run_rag_workflow(query))
+        return await run_rag_workflow(query)
     except Exception as exc:
         traceback.print_exc()
         return f"שגיאה: {exc}"
